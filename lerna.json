@@ -1,0 +1,23 @@
+{
+  "$schema": "node_modules/lerna/schemas/lerna-schema.json",
+  "packages": [
+    "packages/*"
+  ],
+  "command": {
+    "publish": {
+      "message": "chore(release): publish %s",
+      "conventionalCommits": true,
+      "createRelease": "github"
+    }
+  },
+  "useNx": true,
+  "useWorkspaces": true,
+  "version": "independent",
+  "ignoreChanges": [
+    "**/CHANGELOG.md",
+    "**/package-lock.json",
+    "**/test/**",
+    "lerna.json",
+    "readme.md"
+  ]
+}

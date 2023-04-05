@@ -1,0 +1,21 @@
+{
+  "name": "spectorai",
+  "version": "0.0.0",
+  "description": "",
+  "main": "",
+  "scripts": {},
+  "keywords": [],
+  "author": {
+    "name": "Ivan Zaldivar",
+    "url": "https://github.com/thebug404"
+  },
+  "license": "MIT",
+  "workspaces": [
+    "packages/*"
+  ],
+  "devDependencies": {
+    "@types/node": "^18.15.11",
+    "lerna": "^6.6.1",
+    "typescript": "^5.0.3"
+  }
+}
