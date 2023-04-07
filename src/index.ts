@@ -32,20 +32,6 @@ const questions: QuestionCollection = [
     ]
   },
   {
-    type: 'rawlist',
-    name: 'languague',
-    choices: [
-      {
-        name: 'Javascript',
-        value: 'js'
-      },
-      {
-        name: 'Typescript',
-        value: 'ts'
-      }
-    ]
-  },
-  {
     type: 'input',
     name: 'inputPath',
     message: 'Enter the file path:'
@@ -65,14 +51,13 @@ const questions: QuestionCollection = [
 (async () => {
   const data = await inquirer.prompt(questions)
 
-  const { command, languague, inputPath, outputPath, description } = data
+  const { command, inputPath, outputPath, description } = data
 
   const strategy = strategies[command]
 
   try {
     await strategy({
       command,
-      languague,
       inputPath,
       outputPath,
       description
