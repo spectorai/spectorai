@@ -1,3 +1,4 @@
+import { access } from 'node:fs/promises'
 import path from 'node:path'
 
 /**
@@ -36,4 +37,20 @@ export function validateFilePath(filePath: string): boolean {
   if (!path.extname(filePath)) return false
 
   return true
+}
+
+/**
+ * Checks if a file exists in the given path and returns a boolean value as a result.
+ *
+ * @async
+ * @param {string} filePath - The path of the file to check.
+ * @returns {Promise<boolean>} A boolean value indicating whether the file exists or not.
+ */
+export async function checkFileExist (filePath:string): Promise<boolean> {
+  try {
+    await access(path.resolve(filePath))
+    return true
+  } catch (error) {
+    return false
+  }
 }

@@ -1,34 +1,9 @@
 import { appendFile, readFile, writeFile } from 'node:fs/promises'
 
-import { getExtFromFilename } from './utils.js'
-import { commands } from './declarations.js'
+import { checkFileExist, getExtFromFilename } from './utils.js'
+import { commands, Payload } from './declarations.js'
+import { generateTestPrompt } from './prompts.js'
 import { openai } from './openai.js'
-
-export type WriteMode = 'overwrite' | 'append'
-
-export interface Prompt {
-  code: string;
-  languague: string;
-  description: string
-}
-
-export interface Payload {
-  command: string;
-  inputPath: string;
-  outputPath: string;
-  description: string;
-  writeMode: WriteMode;
-}
-
-export function buildingPromptForTest ({ languague, code, description }: Prompt): string {
-  const prompt = [
-    `## Input code\n\n\`\`\`${languague}\n${code}\n\`\`\`\n`,
-    `## Indications\n\n${description}\n`,
-    `## Output code\n\n\`\`\`${languague}`
-  ]
-
-  return prompt.join('\n')
-}
 
 export async function generationTesting(data: Payload) {
   const { description, inputPath, outputPath, writeMode = 'overwrite' } = data
@@ -45,10 +20,17 @@ export async function generationTesting(data: Payload) {
 
   console.log('content file: ', contentFile)
 
-  const prompt = buildingPromptForTest({
-    languague: ext,
-    code: contentFile,
-    description
+  const isExist = await checkFileExist(outputPath)
+
+  const outputCode = isExist ? await readFile(outputPath, { encoding: 'utf-8' }) : ''
+
+  console.log('output code: ', outputCode)
+
+  const prompt = generateTestPrompt({
+    language: ext,
+    targetCode: contentFile,
+    description,
+    outputCode
   })
 
   console.log('prompt: ', prompt)
