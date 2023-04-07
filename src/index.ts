@@ -1,7 +1,10 @@
+import { access, stat, constants } from 'node:fs/promises'
 import inquirer, { QuestionCollection } from 'inquirer'
+import path from 'node:path'
 
 import { commands } from './declarations.js'
 import { strategies } from './strategies.js'
+import { validateFilePath } from './utils.js'
 
 const questions: QuestionCollection = [
   {
@@ -34,12 +37,64 @@ const questions: QuestionCollection = [
   {
     type: 'input',
     name: 'inputPath',
-    message: 'Enter the file path:'
+    message: 'Enter the file path:',
+    async validate(value) {
+      try {
+        const statResource = await stat(path.resolve(value))
+
+        if (statResource.isDirectory()) return 'The path entered must be a file, not a directory.'
+
+        await access(path.resolve(value), constants.R_OK)
+        return true
+      } catch (error: any) {
+        return error?.message ?? 'An error occurred in the operation.'
+      }
+    },
+    filter: (value) => path.resolve(value)
   },
   {
     type: 'input',
     name: 'outputPath',
-    message: 'Specify the output file path:'
+    message: 'Specify the output file path:',
+    validate: (value: string) => {
+      if (validateFilePath(value)) return true
+
+      return 'The path is invalid.'
+    },
+    filter: (value) => path.resolve(value)
+  },
+  {
+    type: 'list',
+    name: 'writeMode',
+    message: 'Select writing mode:',
+    choices: [
+      {
+        name: 'Append',
+        value: 'append'
+      },
+      {
+        name: 'Overwrite',
+        value: 'overwrite'
+      }
+    ],
+    default: 'overwrite',
+    validate: async (_, answers) => {
+      const { outputPath } = answers || {}
+
+      try {
+        await access(outputPath, constants.W_OK)
+      } catch (error: any) {
+        return error?.message ||  'An error occurred in the operation.'
+      }
+    },
+    when: async ({ outputPath }) => {
+      try {
+        await access(outputPath, constants.R_OK)
+        return true
+      } catch (error) {
+        return false
+      }
+    },
   },
   {
     type: 'editor',
@@ -51,7 +106,7 @@ const questions: QuestionCollection = [
 (async () => {
   const data = await inquirer.prompt(questions)
 
-  const { command, inputPath, outputPath, description } = data
+  const { command, inputPath, outputPath, description, writeMode } = data
 
   const strategy = strategies[command]
 
@@ -60,7 +115,8 @@ const questions: QuestionCollection = [
       command,
       inputPath,
       outputPath,
-      description
+      description,
+      writeMode
     })
 
     // console.log(completions.data)

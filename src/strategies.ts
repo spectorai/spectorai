@@ -1,9 +1,10 @@
-import { readFile, writeFile } from 'node:fs/promises'
-import path from 'node:path'
+import { appendFile, readFile, writeFile } from 'node:fs/promises'
 
 import { getExtFromFilename } from './utils.js'
 import { commands } from './declarations.js'
 import { openai } from './openai.js'
+
+export type WriteMode = 'overwrite' | 'append'
 
 export interface Prompt {
   code: string;
@@ -16,6 +17,7 @@ export interface Payload {
   inputPath: string;
   outputPath: string;
   description: string;
+  writeMode: WriteMode;
 }
 
 export function buildingPromptForTest ({ languague, code, description }: Prompt): string {
@@ -29,19 +31,17 @@ export function buildingPromptForTest ({ languague, code, description }: Prompt)
 }
 
 export async function generationTesting(data: Payload) {
-  console.log(data)
+  const { description, inputPath, outputPath, writeMode = 'overwrite' } = data
 
-  const { description, inputPath, outputPath } = data
+  const ext = getExtFromFilename(inputPath)
 
-  const fullpath = path.resolve(inputPath)
+  console.log('writemode: ', writeMode)
 
-  const ext = getExtFromFilename(fullpath)
+  console.log('input path: ', inputPath)
 
-  const outputFullpath = path.resolve(outputPath)
+  console.log('output path: ', outputPath)
 
-  console.log('fullpath: ', fullpath)
-
-  const contentFile = await readFile(fullpath, { encoding: 'utf-8' })
+  const contentFile = await readFile(inputPath, { encoding: 'utf-8' })
 
   console.log('content file: ', contentFile)
 
@@ -64,7 +64,13 @@ export async function generationTesting(data: Payload) {
 
   const body = completion.data.choices.at(0)
 
-  await writeFile(outputFullpath, body?.text as string, { encoding: 'utf-8' })
+  const outputContentFile = body?.text as string
+
+  const encoding = 'utf-8'
+  
+  writeMode === 'overwrite' 
+    ? await writeFile(outputPath, outputContentFile, encoding)
+    : await appendFile(outputPath, outputContentFile, encoding)
 
   console.log('Your test was created successfully.')
 
