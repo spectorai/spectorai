@@ -1,6 +1,7 @@
 import { appendFile, readFile, writeFile } from 'node:fs/promises'
+import { encode } from 'gpt-3-encoder'
 
-import { TEMPERATURE, MAX_TOKENS, TOP_P, ENCODING, AI_MODEL } from './constants.js'
+import { TEMPERATURE, TOP_P, ENCODING, AI_MODEL, MAX_TOKENS_AVAILABLE } from './constants.js'
 import { checkFileExist, getExtFromFilename } from './utils.js'
 import { commands, Payload } from './declarations.js'
 import { generateTestPrompt } from './prompts.js'
@@ -35,6 +36,14 @@ export async function generationTesting(data: Payload) {
   })
 
   console.log('prompt: ', prompt)
+
+  console.log('number tokens: ', encode(prompt).length)
+
+  const MAX_TOKENS =  MAX_TOKENS_AVAILABLE - encode(prompt).length
+
+  console.log('max tokens: ', MAX_TOKENS)
+
+  if (MAX_TOKENS <= 0) throw new Error('The prompt has exceeded the maximum available tokens.')
 
   const completion = await openai.createCompletion({
     model: AI_MODEL,
