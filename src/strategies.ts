@@ -1,5 +1,6 @@
 import { appendFile, readFile, writeFile } from 'node:fs/promises'
 
+import { TEMPERATURE, MAX_TOKENS, TOP_P, ENCODING, AI_MODEL } from './constants.js'
 import { checkFileExist, getExtFromFilename } from './utils.js'
 import { commands, Payload } from './declarations.js'
 import { generateTestPrompt } from './prompts.js'
@@ -16,13 +17,13 @@ export async function generationTesting(data: Payload) {
 
   console.log('output path: ', outputPath)
 
-  const contentFile = await readFile(inputPath, { encoding: 'utf-8' })
+  const contentFile = await readFile(inputPath, ENCODING)
 
   console.log('content file: ', contentFile)
 
   const isExist = await checkFileExist(outputPath)
 
-  const outputCode = isExist ? await readFile(outputPath, { encoding: 'utf-8' }) : ''
+  const outputCode = isExist ? await readFile(outputPath, ENCODING) : ''
 
   console.log('output code: ', outputCode)
 
@@ -36,23 +37,23 @@ export async function generationTesting(data: Payload) {
   console.log('prompt: ', prompt)
 
   const completion = await openai.createCompletion({
-    model: 'text-davinci-003',
+    model: AI_MODEL,
     prompt,
-    temperature: 0,
-    top_p: 0.1,
-    max_tokens: 1024,
+    temperature: TEMPERATURE,
+    top_p: TOP_P,
+    max_tokens: MAX_TOKENS,
+    presence_penalty: 0,
+    frequency_penalty: 0,
     stop: '```'
   })
 
   const body = completion.data.choices.at(0)
 
   const outputContentFile = body?.text as string
-
-  const encoding = 'utf-8'
   
   writeMode === 'overwrite' 
-    ? await writeFile(outputPath, outputContentFile, encoding)
-    : await appendFile(outputPath, outputContentFile, encoding)
+    ? await writeFile(outputPath, outputContentFile, ENCODING)
+    : await appendFile(outputPath, outputContentFile, ENCODING)
 
   console.log('Your test was created successfully.')
 
