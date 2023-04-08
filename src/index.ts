@@ -1,3 +1,5 @@
+#!/usr/bin/env node
+
 import { access, stat, constants } from 'node:fs/promises'
 import inquirer, { QuestionCollection } from 'inquirer'
 import path from 'node:path'

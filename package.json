@@ -1,25 +1,38 @@
 {
   "name": "spectorai",
   "version": "0.0.0",
-  "description": "",
-  "main": "",
+  "description": "Spector AI automates your tasks with AI",
+  "main": "dist/index.js",
+  "bin": "dist/index.js",
   "type": "module",
+  "directories": {
+    "lib": "dist"
+  },
+  "files": [
+    "CHANGELOG.md",
+    "LICENSE",
+    "README.md",
+    "dist/**"
+  ],
   "keywords": [],
   "author": {
     "name": "Ivan Zaldivar",
+    "email": "ivanzaldivar16@gmail.com",
     "url": "https://github.com/thebug404"
   },
   "license": "MIT",
   "scripts": {
+    "prepare": "npm run build",
     "build": "tsc",
-    "start:ts": "ts-node src/index.ts"
+    "start:ts": "ts-node src/index.ts",
+    "start": "node dist/index.js"
   },
   "devDependencies": {
     "@types/inquirer": "9.0.3",
     "@types/node": "18.15.11",
     "@typescript-eslint/eslint-plugin": "5.57.1",
     "@typescript-eslint/parser": "5.57.1",
-    "dotenv": "^16.0.3",
+    "dotenv": "16.0.3",
     "eslint": "8.37.0",
     "eslint-config-standard": "17.0.0",
     "eslint-plugin-import": "2.27.5",
@@ -30,6 +43,6 @@
   },
   "dependencies": {
     "inquirer": "9.1.5",
-    "openai": "^3.2.1"
+    "openai": "3.2.1"
   }
 }
