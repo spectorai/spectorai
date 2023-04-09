@@ -79,9 +79,16 @@ export interface BasePrompt {
 export interface TestPrompt extends BasePrompt {
   /**
    * The test code to be run against the target code.
+   *
    * @type {string=}
    */
   outputCode?: string;
+  /**
+   * Specifies the path of the file that represents the input code.
+   *
+   * @type {string}
+   */
+  targetCodePath: string;
 }
 
 export const commands = {

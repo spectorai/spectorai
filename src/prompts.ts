@@ -31,22 +31,24 @@ import { TestPrompt } from './declarations.js'
  * // console.log(add(2, 3));
  */
 export const generateTestPrompt = (prompt: TestPrompt): string => {
-  const { language, targetCode, description, outputCode = '' } = prompt
+  const { language, targetCode, targetCodePath, description, outputCode = '' } = prompt
 
-  return `
-  ## Target code
+  const promptChunks = [
+    // Target code
+    '## Target code',
+    `\`\`\`${language} [${targetCodePath}]`,
+    `${targetCode}`,
+    '```',
 
-  \`\`\`${language}
-  ${targetCode}
-  \`\`\`
+    // Indications
+    '## Indications',
+    description,
 
-  ## Indications
+    // Test code
+    '## Test code',
+    `\`\`\`${language}`,
+    outputCode
+  ]
 
-  ${description}
-
-  ## Test code
-
-  \`\`\`${language}
-  ${outputCode}
-  `
+  return promptChunks.join('\n')
 }

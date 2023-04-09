@@ -52,18 +52,14 @@ const questions: QuestionCollection = [
         return error?.message ?? 'An error occurred in the operation.'
       }
     },
-    filter: (value) => path.resolve(value)
   },
   {
     type: 'input',
     name: 'outputPath',
     message: 'Specify the output file path:',
     validate: (value: string) => {
-      if (validateFilePath(value)) return true
-
-      return 'The path is invalid.'
-    },
-    filter: (value) => path.resolve(value)
+      return validateFilePath(value) || 'The path is invalid.'
+    }
   },
   {
     type: 'list',

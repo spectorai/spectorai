@@ -15,14 +15,17 @@ export function getExtFromFilename(filename: string): string {
 /**
  * Validates a file path without checking if the file actually exists.
  *
- * @param {string} filePath The file path to validate.
+ * @param {string} inputPath The file path to validate.
  * @returns {boolean} `true` if the file path is valid, `false` otherwise.
  * @example
  *
  * const isValid = validateFilePath('/path/to/file.txt');
  * const isInvalid = validateFilePath('../path/to/file.txt');
  */
-export function validateFilePath(filePath: string): boolean {
+export function validateFilePath(inputPath: string): boolean {
+  // Resolve path.
+  const filePath = path.resolve(inputPath)
+  
   // Check if the path is absolute
   if (!path.isAbsolute(filePath)) return false
 

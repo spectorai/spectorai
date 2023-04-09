@@ -1,5 +1,6 @@
 import { appendFile, readFile, writeFile } from 'node:fs/promises'
 import { encode } from 'gpt-3-encoder'
+import path from 'node:path'
 
 import { TEMPERATURE, TOP_P, ENCODING, AI_MODEL, MAX_TOKENS_AVAILABLE } from './constants.js'
 import { checkFileExist, getExtFromFilename } from './utils.js'
@@ -10,27 +11,32 @@ import { openai } from './openai.js'
 export async function generationTesting(data: Payload) {
   const { description, inputPath, outputPath, writeMode = 'overwrite' } = data
 
-  const ext = getExtFromFilename(inputPath)
+  const inputFullpath = path.resolve(inputPath)
+
+  const outputFullpath = path.resolve(outputPath)
+
+  const ext = getExtFromFilename(inputFullpath)
 
   console.log('writemode: ', writeMode)
 
-  console.log('input path: ', inputPath)
+  console.log('input path: ', inputFullpath)
 
-  console.log('output path: ', outputPath)
+  console.log('output path: ', outputFullpath)
 
-  const contentFile = await readFile(inputPath, ENCODING)
+  const contentFile = await readFile(inputFullpath, ENCODING)
 
   console.log('content file: ', contentFile)
 
-  const isExist = await checkFileExist(outputPath)
+  const isExist = await checkFileExist(outputFullpath)
 
-  const outputCode = isExist ? await readFile(outputPath, ENCODING) : ''
+  const outputCode = isExist ? await readFile(outputFullpath, ENCODING) : ''
 
   console.log('output code: ', outputCode)
 
   const prompt = generateTestPrompt({
     language: ext,
     targetCode: contentFile,
+    targetCodePath: inputPath,
     description,
     outputCode
   })
