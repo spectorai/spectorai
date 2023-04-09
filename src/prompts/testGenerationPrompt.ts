@@ -1,14 +1,17 @@
 import { stat, access, constants, readFile, writeFile, appendFile } from 'node:fs/promises'
 import inquirer, { QuestionCollection } from 'inquirer'
-import { encode } from 'gpt-3-encoder'
+// import { encode } from 'gpt-3-encoder'
 import path from 'node:path'
 import ora from 'ora'
 
-import { checkFileExist, getExtFromFilename, validateFilePath } from '../utils.js'
+import { checkFileExist, clearConsole, closeProgram, getExtFromFilename, printMessage, validateFilePath } from '../utils.js'
 import { generateTestPrompt } from '../prompts.js'
 import { createCompletion } from '../openai.js'
 import { Payload } from '../declarations.js'
 import { ENCODING } from '../constants.js'
+
+import { confirmationPrompt } from './sharedPrompts.js'
+import { initPrompt } from './initialPrompt.js'
 
 const questions: QuestionCollection = [
   {
@@ -85,21 +88,21 @@ export async function generateTest (data: Omit<Payload, 'command'>) {
 
   const ext = getExtFromFilename(inputFullpath)
 
-  console.log('writemode: ', writeMode)
+  // console.log('writemode: ', writeMode)
 
-  console.log('input path: ', inputFullpath)
+  // console.log('input path: ', inputFullpath)
 
-  console.log('output path: ', outputFullpath)
+  // console.log('output path: ', outputFullpath)
 
   const contentFile = await readFile(inputFullpath, ENCODING)
 
-  console.log('content file: ', contentFile)
+  // console.log('content file: ', contentFile)
 
   const isExist = await checkFileExist(outputFullpath)
 
   const outputCode = isExist ? await readFile(outputFullpath, ENCODING) : ''
 
-  console.log('output code: ', outputCode)
+  // console.log('output code: ', outputCode)
 
   const prompt = generateTestPrompt({
     language: ext,
@@ -109,9 +112,9 @@ export async function generateTest (data: Omit<Payload, 'command'>) {
     outputCode
   })
 
-  console.log('prompt: ', prompt)
+  // console.log('prompt: ', prompt)
 
-  console.log('number tokens: ', encode(prompt).length)
+  // console.log('number tokens: ', encode(prompt).length)
 
   const completion = await createCompletion({ prompt })
 
@@ -138,7 +141,27 @@ export async function testGenerationPrompt (): Promise<void> {
     })
 
     spinner.succeed('Your test was created successfully.')
+
+    const isContinue = await confirmationPrompt()
+
+    if (!isContinue) {
+      printMessage({
+        message: 'Spector is here to help you.',
+        startEmoji: 'ghost',
+        endEmoji: 'white_heart'
+      })
+
+      return closeProgram()
+    }
+
+    clearConsole()
+
+    initPrompt()
   } catch (error: any) {
-    spinner.fail(error?.message || 'An error occurred during the operation.')
+    const errorMessage = error?.response?.data?.error?.message || error?.message || 'An error occurred during the operation.'
+
+    spinner.fail(errorMessage)
+
+    closeProgram()
   }
 }

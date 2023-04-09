@@ -1,5 +1,8 @@
 import { access } from 'node:fs/promises'
+import emoji from 'node-emoji'
 import path from 'node:path'
+
+import { Message } from './declarations.js'
 
 /**
  * Extracts the file extension from a filename by removing any characters
@@ -57,3 +60,33 @@ export async function checkFileExist (filePath:string): Promise<boolean> {
     return false
   }
 }
+
+/**
+ * Clears the console.
+ *
+ * @returns {void}
+ */
+export function clearConsole (): void {
+  console.clear()
+}
+
+/**
+ * Prints a message to the console, optionally with start and end emojis.
+ *
+ * @param {Message} data An object containing the message to print and optional start and end emojis.
+ * @returns {void}
+ */
+export function printMessage(data: Message): void {
+  const startEmoji = emoji.get(data.startEmoji || '')
+  const endEmoji = emoji.get(data.endEmoji || '')
+
+  console.log(`${startEmoji} ${data.message} ${endEmoji}`)
+}
+
+/**
+ * Closes the program.
+ *
+ * @returns {void}
+ */
+export const closeProgram = (): void => process.exit(1)
+

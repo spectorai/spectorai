@@ -107,6 +107,26 @@ export interface TestPrompt extends BasePrompt {
   targetCodePath: string;
 }
 
+/**
+ * An object representing a message, optionally with start and end emojis.
+ *
+ * @interface
+ */
+export interface Message {
+  /**
+   * The message to display.
+   */
+  message: string;
+  /**
+   * An optional start emoji.
+   */
+  startEmoji?: string;
+  /**
+   * An optional end emoji.
+   */
+  endEmoji?: string;
+}
+
 export const commands = {
   TestGeneration: 'TG',
   GenerationDocumentation: 'GD',
