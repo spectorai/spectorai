@@ -1,5 +1,15 @@
 # Spector AI
 
+## Features
+
+- 🧪 Test generation.
+- 📙 Documentation generation.
+- 🧮 Generation of functions.
+- 🗒️ Code explanation.
+- ⚡ Easy to configure and integrate.
+- 🛡️ Written in Typescript.
+- 👨🏻‍💻 Community driven.
+
 ## Installation
 
 ```bash
