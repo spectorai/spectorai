@@ -2,11 +2,11 @@ import { appendFile, readFile, writeFile } from 'node:fs/promises'
 import { encode } from 'gpt-3-encoder'
 import path from 'node:path'
 
-import { TEMPERATURE, TOP_P, ENCODING, AI_MODEL, MAX_TOKENS_AVAILABLE } from './constants.js'
 import { checkFileExist, getExtFromFilename } from './utils.js'
 import { commands, Payload } from './declarations.js'
 import { generateTestPrompt } from './prompts.js'
-import { openai } from './openai.js'
+import { createCompletion } from './openai.js'
+import { ENCODING } from './constants.js'
 
 export async function generationTesting(data: Payload) {
   const { description, inputPath, outputPath, writeMode = 'overwrite' } = data
@@ -45,34 +45,15 @@ export async function generationTesting(data: Payload) {
 
   console.log('number tokens: ', encode(prompt).length)
 
-  const MAX_TOKENS =  MAX_TOKENS_AVAILABLE - encode(prompt).length
+  const completion = await createCompletion({ prompt })
 
-  console.log('max tokens: ', MAX_TOKENS)
-
-  if (MAX_TOKENS <= 0) throw new Error('The prompt has exceeded the maximum available tokens.')
-
-  const completion = await openai.createCompletion({
-    model: AI_MODEL,
-    prompt,
-    temperature: TEMPERATURE,
-    top_p: TOP_P,
-    max_tokens: MAX_TOKENS,
-    presence_penalty: 0,
-    frequency_penalty: 0,
-    stop: '```'
-  })
-
-  const body = completion.data.choices.at(0)
-
-  const outputContentFile = body?.text as string
+  const outputContentFile = completion?.text as string
   
   writeMode === 'overwrite' 
     ? await writeFile(outputPath, outputContentFile, ENCODING)
     : await appendFile(outputPath, outputContentFile, ENCODING)
 
   console.log('Your test was created successfully.')
-
-  return completion
 }
 
 export const strategies = {

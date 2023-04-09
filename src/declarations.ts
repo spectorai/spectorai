@@ -1,3 +1,19 @@
+import { CreateCompletionRequest } from 'openai'
+
+/**
+ * An interface representing a request for text completion using an AI language model.
+ *
+ * @interface
+ */
+export interface CompletionRequest extends Omit<CreateCompletionRequest, 'prompt'> {
+  /**
+   * The prompt text to use as a starting point for text completion.
+   *
+   * @type {string}
+   */
+  prompt: string;
+}
+
 /**
  * Possible values for the write mode.
  */
