@@ -2,6 +2,7 @@
 
 ## Features
 
+- 🔭 Compatible with any programming language.
 - 🧪 Test generation.
 - 📙 Documentation generation.
 - 🧮 Generation of functions.
@@ -9,6 +10,10 @@
 - ⚡ Easy to configure and integrate.
 - 🛡️ Written in Typescript.
 - 👨🏻‍💻 Community driven.
+
+## Requirements
+
+- Have [Node.js](https://nodejs.org) installed.
 
 ## Installation
 
@@ -47,3 +52,7 @@ You will be shown a screen like this:
 > Don't worry if you don't see the same options, we're working on it.
 
 Now select the option you want to use and continue to fill in the information.
+
+## Supported programming languages
+
+**Spector AI** currently supports most programming languages. How is this possible? The question is that **Spector AI extracts the extension** of the file on which we want to perform a certain task. Either to generate tests, documentation or code explanations.
