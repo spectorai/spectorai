@@ -108,7 +108,7 @@ export interface TestPrompt extends BasePrompt {
 }
 
 export const commands = {
-  GenerationTesting: 'GTT',
+  TestGeneration: 'TG',
   GenerationDocumentation: 'GD',
   BugDetection: 'BD',
   ExplainedCode: 'EC',

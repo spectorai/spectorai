@@ -1,7 +1,6 @@
 import { appendFile, readFile, writeFile } from 'node:fs/promises'
 import { encode } from 'gpt-3-encoder'
 import path from 'node:path'
-import ora from 'ora'
 
 import { checkFileExist, getExtFromFilename } from './utils.js'
 import { commands, Payload } from './declarations.js'
@@ -10,8 +9,6 @@ import { createCompletion } from './openai.js'
 import { ENCODING } from './constants.js'
 
 export async function generationTesting(data: Payload) {
-  const spinner = ora('Your tests are being generated, please wait a moment...').start()
-
   const { description, inputPath, outputPath, writeMode = 'overwrite' } = data
 
   const inputFullpath = path.resolve(inputPath)
@@ -55,8 +52,6 @@ export async function generationTesting(data: Payload) {
   writeMode === 'overwrite' 
     ? await writeFile(outputPath, outputContentFile, ENCODING)
     : await appendFile(outputPath, outputContentFile, ENCODING)
-
-  spinner.succeed('Your test was created successfully.')
 }
 
 export const strategies = {
