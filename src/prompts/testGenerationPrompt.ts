@@ -14,10 +14,10 @@ import {
   validateFilePath,
   writeFile
 } from '../utils.js'
-import { generateTestPrompt } from '../prompts.js'
-import { createCompletion } from '../openai.js'
+import { generateTestPrompt } from '../templates.js'
+import { createCompletion } from '../config/openai.js'
 import { Payload } from '../declarations.js'
-import { ENCODING } from '../constants.js'
+import { ENCODING } from '../config/constants.js'
 
 import { confirmationPrompt } from './sharedPrompts.js'
 import { initPrompt } from './initialPrompt.js'

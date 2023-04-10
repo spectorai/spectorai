@@ -2,7 +2,7 @@ import { Configuration, CreateCompletionResponseChoicesInner, OpenAIApi } from '
 import { encode } from 'gpt-3-encoder'
 
 import { AI_MODEL, TEMPERATURE, TOP_P, MAX_TOKENS_AVAILABLE, PRESENCE_PENALTY, FREQUENCY_PENALTY } from './constants.js'
-import { CompletionRequest } from './declarations.js'
+import { CompletionRequest } from '../declarations.js'
 import { environments } from './environments.js'
 
 export const configuration = new Configuration({

@@ -3,7 +3,7 @@ import emoji from 'node-emoji'
 import path from 'node:path'
 
 import { Message } from './declarations.js'
-import { ENCODING } from './constants.js';
+import { ENCODING } from './config/constants.js'
 
 /**
  * Extracts the file extension from a filename by removing any characters
