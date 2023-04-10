@@ -1,10 +1,19 @@
-import { stat, access, constants, readFile, writeFile, appendFile } from 'node:fs/promises'
+import { stat, access, constants, readFile } from 'node:fs/promises'
 import inquirer, { QuestionCollection } from 'inquirer'
 // import { encode } from 'gpt-3-encoder'
 import path from 'node:path'
 import ora from 'ora'
 
-import { checkFileExist, clearConsole, closeProgram, getExtFromFilename, printMessage, validateFilePath } from '../utils.js'
+import {
+  hasPathAccess,
+  clearConsole,
+  closeProgram,
+  createDir,
+  getExtFromFilename,
+  printMessage,
+  validateFilePath,
+  writeFile
+} from '../utils.js'
 import { generateTestPrompt } from '../prompts.js'
 import { createCompletion } from '../openai.js'
 import { Payload } from '../declarations.js'
@@ -12,6 +21,10 @@ import { ENCODING } from '../constants.js'
 
 import { confirmationPrompt } from './sharedPrompts.js'
 import { initPrompt } from './initialPrompt.js'
+
+const MESSAGE_FEEDBACK = 'Your tests are being generated, please wait a moment...'
+
+const MESSAGE_SUCCEEDED = 'Your test was created successfully.'
 
 const questions: QuestionCollection = [
   {
@@ -98,7 +111,7 @@ export async function generateTest (data: Omit<Payload, 'command'>) {
 
   // console.log('content file: ', contentFile)
 
-  const isExist = await checkFileExist(outputFullpath)
+  const isExist = await hasPathAccess(outputFullpath)
 
   const outputCode = isExist ? await readFile(outputFullpath, ENCODING) : ''
 
@@ -119,10 +132,16 @@ export async function generateTest (data: Omit<Payload, 'command'>) {
   const completion = await createCompletion({ prompt })
 
   const outputContentFile = completion?.text as string
-  
-  writeMode === 'overwrite' 
-    ? await writeFile(outputPath, outputContentFile, ENCODING)
-    : await appendFile(outputPath, outputContentFile, ENCODING)
+
+  const { dir: outputDir } = path.parse(outputFullpath)
+
+  if (!(await hasPathAccess(outputDir))) {
+    await createDir(outputDir)
+  }
+
+  return writeFile(outputFullpath, outputContentFile, {
+    mode: writeMode
+  })
 }
 
 export async function testGenerationPrompt (): Promise<void> {
@@ -130,7 +149,7 @@ export async function testGenerationPrompt (): Promise<void> {
 
   const { inputPath, outputPath, description, writeMode } = answers
 
-  const spinner = ora('Your tests are being generated, please wait a moment...').start()
+  const spinner = ora(MESSAGE_FEEDBACK).start()
 
   try {
     await generateTest({
@@ -140,7 +159,7 @@ export async function testGenerationPrompt (): Promise<void> {
       writeMode
     })
 
-    spinner.succeed('Your test was created successfully.')
+    spinner.succeed(MESSAGE_SUCCEEDED)
 
     const isContinue = await confirmationPrompt()
 

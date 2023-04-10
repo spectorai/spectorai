@@ -1,8 +1,9 @@
-import { access } from 'node:fs/promises'
+import { access, appendFile, mkdir, writeFile as _writeFile } from 'node:fs/promises'
 import emoji from 'node-emoji'
 import path from 'node:path'
 
 import { Message } from './declarations.js'
+import { ENCODING } from './constants.js';
 
 /**
  * Extracts the file extension from a filename by removing any characters
@@ -46,19 +47,52 @@ export function validateFilePath(inputPath: string): boolean {
 }
 
 /**
- * Checks if a file exists in the given path and returns a boolean value as a result.
+ * Checks if a path exists in the given path and returns a boolean value as a result.
  *
  * @async
  * @param {string} filePath - The path of the file to check.
  * @returns {Promise<boolean>} A boolean value indicating whether the file exists or not.
  */
-export async function checkFileExist (filePath:string): Promise<boolean> {
+export async function hasPathAccess (filePath:string): Promise<boolean> {
   try {
     await access(path.resolve(filePath))
     return true
   } catch (error) {
     return false
   }
+}
+
+/**
+ * Creates a new directory at the specified path if it doesn't already exist.
+ *
+ * @async
+ * @param {string} dirPath The path of the directory to create.
+ * @returns {Promise<string | undefined>}
+ */
+export async function createDir (dirPath: string): Promise<string | undefined> {
+  return mkdir(dirPath, { recursive: true });
+}
+
+export interface WriteOptions {
+  encoding: BufferEncoding;
+  mode: 'overwrite' | 'append'
+}
+
+/**
+ * Writes content to a file at the specified path, with the specified encoding and write mode.
+ *
+ * @async
+ * @param {string} path - The path of the file to write to.
+ * @param {string} content - The content to write to the file.
+ * @param {object} [options] - Optional parameters to customize the write operation.
+ * @returns {Promise<void>}
+ */
+export async function writeFile (path: string, content: string, options: Partial<WriteOptions> = {}): Promise<void> {
+  const { encoding = ENCODING, mode = 'overwrite' } = options
+
+  return mode === 'overwrite'
+    ? _writeFile(path, content, encoding)
+    : appendFile(path, content, encoding)
 }
 
 /**
