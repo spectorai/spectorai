@@ -37,7 +37,9 @@ export async function createCompletion (payload: Partial<CompletionRequest>): Pr
 
   const MAX_TOKENS = MAX_TOKENS_AVAILABLE - encode(prompt).length
 
-  if (MAX_TOKENS <= 0) throw new Error('The prompt has exceeded the maximum available tokens.')
+  if (MAX_TOKENS < environments.OPENAI_MIN_TOKENS) {
+    throw new RangeError('The prompt exceeds the maximum allowed token limit. Please reduce the size of your prompt.')
+  }
 
   const completion = await openai.createCompletion({
     model,
