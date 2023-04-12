@@ -1,3 +1,5 @@
+![Spector AI](https://user-images.githubusercontent.com/64434514/231593196-a893acb3-3e39-4d15-9426-03d4a14b20e6.png)
+
 # Spector AI
 
 > Description made with **GPT 3.5**
