@@ -1,8 +1,8 @@
-import { access, appendFile, mkdir, writeFile as _writeFile } from 'node:fs/promises'
+import { access, appendFile, mkdir, writeFile as _writeFile, stat, readFile } from 'node:fs/promises'
 import emoji from 'node-emoji'
-import path from 'node:path'
+import _path from 'node:path'
 
-import { Message } from './declarations.js'
+import { Message, WriteMode } from './declarations.js'
 import { ENCODING } from './config/constants.js'
 
 /**
@@ -28,20 +28,20 @@ export function getExtFromFilename(filename: string): string {
  */
 export function validateFilePath(inputPath: string): boolean {
   // Resolve path.
-  const filePath = path.resolve(inputPath)
+  const filePath = _path.resolve(inputPath)
   
   // Check if the path is absolute
-  if (!path.isAbsolute(filePath)) return false
+  if (!_path.isAbsolute(filePath)) return false
 
   // Normalize the path to remove any redundant or dangerous elements
-  const normalizedPath = path.normalize(filePath)
+  const normalizedPath = _path.normalize(filePath)
 
   // Check if the normalized path is the same as the original path
   // This will detect any attempts to inject relative paths or other tricks
   if (normalizedPath !== filePath) return false
 
   // Check if the file path has an extension
-  if (!path.extname(filePath)) return false
+  if (!_path.extname(filePath)) return false
 
   return true
 }
@@ -55,7 +55,7 @@ export function validateFilePath(inputPath: string): boolean {
  */
 export async function hasPathAccess (filePath:string): Promise<boolean> {
   try {
-    await access(path.resolve(filePath))
+    await access(_path.resolve(filePath))
     return true
   } catch (error) {
     return false
@@ -124,3 +124,59 @@ export function printMessage(data: Message): void {
  */
 export const closeProgram = (): void => process.exit(1)
 
+export type Query = Record<string, unknown>
+
+export type QueryFileManager = Query & {
+  mode: WriteMode;
+  encoding: BufferEncoding;
+}
+
+export interface File {
+  name: string;
+  ext: string;
+  dir: string;
+  fullpath: string;
+  content: string;
+  size: number;
+  createdAt: Date;
+}
+
+export class FileManager {
+  async create (data: unknown, query?: QueryFileManager): Promise<void> {
+    const { path: filePath, content, encoding } = data as any
+
+    const { mode = 'overwrite' } = query || {}
+
+    const fullpath = _path.resolve(filePath)
+
+    return mode === 'overwrite'
+      ? writeFile(fullpath, content, encoding)
+      : appendFile(fullpath, content, encoding)
+  }
+
+  async get (path: string, query?: QueryFileManager): Promise<File | null | undefined> {
+    const { encoding = ENCODING } = query || {}
+
+    const fullpath = _path.resolve(path)
+
+    if (!(await hasPathAccess(fullpath))) return null
+
+    const { ext, base: filename, dir } = _path.parse(fullpath)
+
+    const statFile = await stat(fullpath)
+
+    if (statFile.isDirectory()) return null
+
+    const content = await readFile(fullpath, { encoding })
+
+    return {
+      name: filename,
+      ext: getExtFromFilename(ext),
+      dir,
+      fullpath,
+      content,
+      size: statFile.size,
+      createdAt: statFile.birthtime,
+    }
+  }
+}

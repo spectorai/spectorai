@@ -9,14 +9,16 @@ import {
   clearConsole,
   closeProgram,
   createDir,
-  getExtFromFilename,
+  // getExtFromFilename,
   printMessage,
   validateFilePath,
-  writeFile
+  writeFile,
+  FileManager,
+  File
 } from '../utils.js'
 import { generateTestPrompt } from '../templates.js'
 import { createCompletion } from '../config/openai.js'
-import { ENCODING } from '../config/constants.js'
+// import { ENCODING } from '../config/constants.js'
 import { Payload } from '../declarations.js'
 
 import { confirmationPrompt } from './sharedPrompts.js'
@@ -25,6 +27,8 @@ import { initPrompt } from './initialPrompt.js'
 const MESSAGE_FEEDBACK = 'Your tests are being generated, please wait a moment...'
 
 const MESSAGE_SUCCEEDED = 'Your test was created successfully.'
+
+const fileManager = new FileManager()
 
 const questions: QuestionCollection = [
   {
@@ -95,11 +99,15 @@ const questions: QuestionCollection = [
 export async function generateTest (data: Omit<Payload, 'command'>) {
   const { description, inputPath, outputPath, writeMode = 'overwrite' } = data
 
-  const inputFullpath = path.resolve(inputPath)
+  // const inputFullpath = path.resolve(inputPath)
 
-  const outputFullpath = path.resolve(outputPath)
+  // const outputFullpath = path.resolve(outputPath)
 
-  const ext = getExtFromFilename(inputFullpath)
+  // const ext = getExtFromFilename(inputFullpath)
+
+  const inFile = await fileManager.get(inputPath) as File
+
+  const outFile = await fileManager.get(outputPath)
 
   // console.log('writemode: ', writeMode)
 
@@ -107,39 +115,41 @@ export async function generateTest (data: Omit<Payload, 'command'>) {
 
   // console.log('output path: ', outputFullpath)
 
-  const contentFile = await readFile(inputFullpath, ENCODING)
+  // const contentFile = await readFile(inputFullpath, ENCODING)
 
   // console.log('content file: ', contentFile)
 
-  const isExist = await hasPathAccess(outputFullpath)
+  // const isExist = await hasPathAccess(outputFullpath)
 
-  const outputCode = isExist ? await readFile(outputFullpath, ENCODING) : ''
+  // const outputCode = isExist ? await readFile(outputFullpath, ENCODING) : ''
 
   // console.log('output code: ', outputCode)
 
   const prompt = generateTestPrompt({
-    language: ext,
-    targetCode: contentFile,
+    language: inFile.ext,
+    targetCode: inFile.content,
     targetCodePath: inputPath,
     description,
-    outputCode
+    outputCode: outFile?.content || ''
   })
 
-  // console.log('prompt: ', prompt)
+  console.log('prompt: ', prompt)
 
   // console.log('number tokens: ', encode(prompt).length)
+
+  const outFullpath = outFile?.fullpath || path.resolve(outputPath)
 
   const completion = await createCompletion({ prompt })
 
   const outputContentFile = completion?.text as string
 
-  const { dir: outputDir } = path.parse(outputFullpath)
+  const { dir: outputDir } = path.parse(outFullpath)
 
   if (!(await hasPathAccess(outputDir))) {
     await createDir(outputDir)
   }
 
-  return writeFile(outputFullpath, outputContentFile, {
+  return writeFile(outFullpath, outputContentFile, {
     mode: writeMode
   })
 }
