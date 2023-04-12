@@ -2,6 +2,7 @@ import { Configuration, CreateCompletionResponseChoicesInner, OpenAIApi } from '
 import { encode } from 'gpt-3-encoder'
 
 import { AI_MODEL, TEMPERATURE, TOP_P, MAX_TOKENS_AVAILABLE, PRESENCE_PENALTY, FREQUENCY_PENALTY } from './constants.js'
+import { MaximumTokensExceededError } from '../errors.js'
 import { CompletionRequest } from '../declarations.js'
 import { environments } from './environments.js'
 
@@ -38,7 +39,7 @@ export async function createCompletion (payload: Partial<CompletionRequest>): Pr
   const MAX_TOKENS = MAX_TOKENS_AVAILABLE - encode(prompt).length
 
   if (MAX_TOKENS < environments.OPENAI_MIN_TOKENS) {
-    throw new RangeError('The prompt exceeds the maximum allowed token limit. Please reduce the size of your prompt.')
+    throw new MaximumTokensExceededError('The prompt exceeds the maximum allowed token limit. Please reduce the size of your prompt.')
   }
 
   const completion = await openai.createCompletion({

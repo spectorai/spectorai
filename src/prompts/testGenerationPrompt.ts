@@ -16,8 +16,8 @@ import {
 } from '../utils.js'
 import { generateTestPrompt } from '../templates.js'
 import { createCompletion } from '../config/openai.js'
-import { Payload } from '../declarations.js'
 import { ENCODING } from '../config/constants.js'
+import { Payload } from '../declarations.js'
 
 import { confirmationPrompt } from './sharedPrompts.js'
 import { initPrompt } from './initialPrompt.js'
