@@ -127,6 +127,107 @@ export interface Message {
   endEmoji?: string;
 }
 
+/**
+ * A `Record` object representing a query.
+ */
+export type Query = Record<string, unknown>
+
+/**
+ * A type that can be a string or a number to represent an ID.
+ */
+export type Id = string | number
+
+/**
+ * A type representing the file type, can be 'file' or 'dir'.
+ */
+export type FileType = 'file' | 'dir'
+
+/**
+ * An interface that defines common service methods.
+ * @interface ServiceMethods
+ * @template T The input data type.
+ * @template K The type of data returned.
+ */
+export interface ServiceMethods<T, K> {
+  /**
+   * Method responsible for creating a resource.
+   * @function create
+   * @memberof ServiceMethods
+   * @instance
+   * @param {T} data The data representing the data to create.
+   * @param {Query} [query] Represents additional parameters.
+   * @returns {Promise<K>} Promise containing the created data.
+   */
+  create (data: T, query?: Query): Promise<K>;
+  /**
+   * Method responsible for obtaining a resource based on an ID.
+   * @function get
+   * @memberof ServiceMethods
+   * @instance
+   * @param {Id} id The ID of the resource.
+   * @param {Query} [query] Represents additional parameters.
+   * @returns {Promise<K | null>} A promise that resolves to the fetched data or `null` if the record is not found.
+   */
+  get (id: Id, query?: Query): Promise<K | null>;
+}
+
+export interface FileSystem {
+  /**
+   * The name of the file or directory.
+   * @memberof FileSystem
+   * @instance
+   */
+  name: string;
+  /**
+   * The directory path that contains the file or directory.
+   * @memberof FileSystem
+   * @instance
+   */
+  dir: string;
+  /**
+   * The full path of the file or directory.
+   * @memberof FileSystem
+   * @instance
+   */
+  path: string;
+  /**
+   * The type of file or directory.
+   * @memberof FileSystem
+   * @instance
+   */
+  type: FileType;
+  /**
+   * The file extension (optional).
+   * @memberof FileSystem
+   * @instance
+   */
+  ext: string | null | undefined;
+  /**
+   * The size of the file in bytes.
+   * @memberof FileSystem
+   * @instance
+   */
+  size: number;
+  /**
+   * The content of the file (optional).
+   * @memberof FileSystem
+   * @instance
+   */
+  content: string | null | undefined;
+  /**
+   * The date the file or directory was created.
+   * @memberof FileSystem
+   * @instance
+   */
+  createdAt: Date;
+  /**
+   * The last modified date of the file or directory.
+   * @memberof FileSystem
+   * @instance
+   */
+  updatedAt: Date;
+}
+
 export const commands = {
   TestGeneration: 'TG',
   GenerationDocumentation: 'GD',

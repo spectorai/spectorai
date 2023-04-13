@@ -3,18 +3,13 @@ import inquirer, { QuestionCollection } from 'inquirer'
 import path from 'node:path'
 import ora from 'ora'
 
-import {
-  clearConsole,
-  closeProgram,
-  printMessage,
-  validateFilePath,
-  FileManager,
-  File,
-  DirectoryManager
-} from '../utils.js'
-import { generateTestPrompt } from '../templates.js'
+import { clearConsole, closeProgram, printMessage, validateFilePath } from '../utils.js'
+import { Payload, FileSystem } from '../declarations.js'
 import { createCompletion } from '../config/openai.js'
-import { Payload } from '../declarations.js'
+import { generateTestPrompt } from '../templates.js'
+
+import { DirectoryService } from '../services/directory.service.js'
+import { FileService } from '../services/file.service.js'
 
 import { confirmationPrompt } from './sharedPrompts.js'
 import { initPrompt } from './initialPrompt.js'
@@ -23,9 +18,9 @@ const MESSAGE_FEEDBACK = 'Your tests are being generated, please wait a moment..
 
 const MESSAGE_SUCCEEDED = 'Your test was created successfully.'
 
-const fileManager = new FileManager()
+const fileService = new FileService()
 
-const directoryManager = new DirectoryManager()
+const directoryService = new DirectoryService()
 
 const questions: QuestionCollection = [
   {
@@ -96,13 +91,13 @@ const questions: QuestionCollection = [
 export async function generateTest (data: Omit<Payload, 'command'>) {
   const { description, inputPath, outputPath, writeMode = 'overwrite' } = data
 
-  const inFile = await fileManager.get(inputPath) as File
+  const inFile = await fileService.get(inputPath) as FileSystem
 
-  const outFile = await fileManager.get(outputPath)
+  const outFile = await fileService.get(outputPath)
 
   const prompt = generateTestPrompt({
-    language: inFile.ext,
-    targetCode: inFile.content,
+    language: inFile.ext as string,
+    targetCode: inFile.content as string,
     targetCodePath: inputPath,
     description,
     outputCode: outFile?.content || ''
@@ -110,7 +105,7 @@ export async function generateTest (data: Omit<Payload, 'command'>) {
 
   console.log('prompt: ', prompt)
 
-  const outFullpath = outFile?.fullpath || path.resolve(outputPath)
+  const outFullpath = outFile?.path || path.resolve(outputPath)
 
   const completion = await createCompletion({ prompt })
 
@@ -118,11 +113,11 @@ export async function generateTest (data: Omit<Payload, 'command'>) {
 
   const { dir: outputDir } = path.parse(outFullpath)
 
-  if (!(await directoryManager.get(outputDir))) {
-    await directoryManager.create({ path: outputDir })
+  if (!(await directoryService.get(outputDir))) {
+    await directoryService.create({ path: outputDir })
   }
 
-  return fileManager.create(
+  return fileService.create(
     {
       path: outFullpath,
       content: outContent

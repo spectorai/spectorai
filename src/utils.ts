@@ -1,9 +1,9 @@
-import { access, appendFile, mkdir, writeFile as _writeFile, stat, readFile } from 'node:fs/promises'
+import { access, appendFile, mkdir, writeFile as _writeFile } from 'node:fs/promises'
 import emoji from 'node-emoji'
 import _path from 'node:path'
 
-import { Message, WriteMode } from './declarations.js'
 import { ENCODING } from './config/constants.js'
+import { Message } from './declarations.js'
 
 /**
  * Extracts the file extension from a filename by removing any characters
@@ -123,100 +123,3 @@ export function printMessage(data: Message): void {
  * @returns {void}
  */
 export const closeProgram = (): void => process.exit(1)
-
-export type Query = Record<string, unknown>
-
-export type QueryFileManager = Query & {
-  mode: WriteMode;
-  encoding: BufferEncoding;
-}
-
-export interface File {
-  name: string;
-  ext: string;
-  dir: string;
-  fullpath: string;
-  content: string;
-  size: number;
-  createdAt: Date;
-}
-
-export class FileManager {
-  async create (data: unknown, query?: Omit<QueryFileManager, 'encoding'>): Promise<File> {
-    const { path: filePath, content, encoding = ENCODING } = data as any
-
-    const { mode = 'overwrite' } = query || {}
-
-    const fullpath = _path.resolve(filePath)
-
-    mode === 'overwrite'
-      ? await writeFile(fullpath, content, encoding)
-      : await appendFile(fullpath, content, encoding)
-
-    return this.get(fullpath) as Promise<File>
-  }
-
-  async get (path: string, query?: QueryFileManager): Promise<File | null | undefined> {
-    const { encoding = ENCODING } = query || {}
-
-    const fullpath = _path.resolve(path)
-
-    if (!(await hasPathAccess(fullpath))) return null
-
-    const { ext, base: filename, dir } = _path.parse(fullpath)
-
-    const statFile = await stat(fullpath)
-
-    if (statFile.isDirectory()) return null
-
-    const content = await readFile(fullpath, { encoding })
-
-    return {
-      name: filename,
-      ext: getExtFromFilename(ext),
-      dir,
-      fullpath,
-      content,
-      size: statFile.size,
-      createdAt: statFile.birthtime,
-    }
-  }
-}
-
-export class DirectoryManager {
-  async create (data: unknown, query: unknown = {}) {
-    const { path = '' } = data as any || {}
-
-    const { recursive = true } = query as any
-
-    const fullpath = _path.resolve(path)
-
-    await mkdir(fullpath, { recursive })
-
-    return this.get(path)
-  }
-
-  async get (path: string, query?: unknown) {
-    const fullpath = _path.resolve(path)
-
-    if (!(await hasPathAccess(fullpath))) return null
-
-    const statEntity = await stat(fullpath)
-
-    if (statEntity.isFile()) return null
-
-    const { dir } = _path.parse(fullpath)
-
-    const name = fullpath.split(_path.sep).at(-1)
-
-    return {
-      name,
-      ext: null,
-      dir,
-      fullpath,
-      content: null,
-      size: statEntity.size,
-      createdAt: statEntity.birthtime,
-    }
-  }
-}
