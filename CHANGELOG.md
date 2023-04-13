@@ -1,3 +1,12 @@
+## [0.0.1-alpha.2](https://github.com/spectorai/spectorai/compare/v0.0.1-alpha.1...v0.0.1-alpha.2) (2023-04-13)
+
+
+### Bug Fixes
+
+* Test Generation was established as the only option ([95ec1c0](https://github.com/spectorai/spectorai/commit/95ec1c0d4b4d031fb75210b92304b1e99e6e84a5))
+
+
+
 ## [0.0.1-alpha.1](https://github.com/spectorai/spectorai/compare/v0.0.1-alpha.0...v0.0.1-alpha.1) (2023-04-13)
 
 
