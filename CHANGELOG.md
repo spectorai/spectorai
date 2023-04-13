@@ -1,3 +1,12 @@
+## [0.0.1-alpha.1](https://github.com/spectorai/spectorai/compare/v0.0.1-alpha.0...v0.0.1-alpha.1) (2023-04-13)
+
+
+### Features
+
+* Added domain events. Close [#5](https://github.com/spectorai/spectorai/issues/5) ([fbe36a1](https://github.com/spectorai/spectorai/commit/fbe36a19fabcb8765f4b741b41c7857c4ec09fd2))
+
+
+
 ## [0.0.1-alpha.0](https://github.com/spectorai/spectorai/compare/f7e6aed6684d7d7136ee34b5d82b85f636609702...v0.0.1-alpha.0) (2023-04-12)
 
 
