@@ -1,7 +1,14 @@
 import { Configuration, CreateCompletionResponseChoicesInner, OpenAIApi } from 'openai'
 import { encode } from 'gpt-3-encoder'
 
-import { AI_MODEL, TEMPERATURE, TOP_P, MAX_TOKENS_AVAILABLE, PRESENCE_PENALTY, FREQUENCY_PENALTY } from './constants.js'
+import {
+  AI_MODEL,
+  TEMPERATURE,
+  TOP_P,
+  MAX_TOKENS_AVAILABLE,
+  PRESENCE_PENALTY,
+  FREQUENCY_PENALTY
+} from './constants.js'
 import { MaximumTokensExceededError } from '../errors.js'
 import { CompletionRequest } from '../declarations.js'
 import { environments } from './environments.js'

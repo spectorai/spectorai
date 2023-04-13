@@ -1,7 +1,7 @@
 import { mkdir, stat } from 'node:fs/promises'
 import _path from 'node:path'
 
-import { ServiceMethods, FileSystem } from '../declarations'
+import { ServiceMethods, FileSystem } from '../declarations.js'
 import { hasPathAccess } from '../utils.js'
 
 export class DirectoryService implements ServiceMethods<FileSystem, FileSystem> {
