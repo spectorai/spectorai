@@ -1,24 +1,19 @@
-import { stat, access, constants, readFile } from 'node:fs/promises'
+import { stat, access, constants } from 'node:fs/promises'
 import inquirer, { QuestionCollection } from 'inquirer'
-// import { encode } from 'gpt-3-encoder'
 import path from 'node:path'
 import ora from 'ora'
 
 import {
-  hasPathAccess,
   clearConsole,
   closeProgram,
-  createDir,
-  // getExtFromFilename,
   printMessage,
   validateFilePath,
-  writeFile,
   FileManager,
-  File
+  File,
+  DirectoryManager
 } from '../utils.js'
 import { generateTestPrompt } from '../templates.js'
 import { createCompletion } from '../config/openai.js'
-// import { ENCODING } from '../config/constants.js'
 import { Payload } from '../declarations.js'
 
 import { confirmationPrompt } from './sharedPrompts.js'
@@ -29,6 +24,8 @@ const MESSAGE_FEEDBACK = 'Your tests are being generated, please wait a moment..
 const MESSAGE_SUCCEEDED = 'Your test was created successfully.'
 
 const fileManager = new FileManager()
+
+const directoryManager = new DirectoryManager()
 
 const questions: QuestionCollection = [
   {
@@ -99,31 +96,9 @@ const questions: QuestionCollection = [
 export async function generateTest (data: Omit<Payload, 'command'>) {
   const { description, inputPath, outputPath, writeMode = 'overwrite' } = data
 
-  // const inputFullpath = path.resolve(inputPath)
-
-  // const outputFullpath = path.resolve(outputPath)
-
-  // const ext = getExtFromFilename(inputFullpath)
-
   const inFile = await fileManager.get(inputPath) as File
 
   const outFile = await fileManager.get(outputPath)
-
-  // console.log('writemode: ', writeMode)
-
-  // console.log('input path: ', inputFullpath)
-
-  // console.log('output path: ', outputFullpath)
-
-  // const contentFile = await readFile(inputFullpath, ENCODING)
-
-  // console.log('content file: ', contentFile)
-
-  // const isExist = await hasPathAccess(outputFullpath)
-
-  // const outputCode = isExist ? await readFile(outputFullpath, ENCODING) : ''
-
-  // console.log('output code: ', outputCode)
 
   const prompt = generateTestPrompt({
     language: inFile.ext,
@@ -135,8 +110,6 @@ export async function generateTest (data: Omit<Payload, 'command'>) {
 
   console.log('prompt: ', prompt)
 
-  // console.log('number tokens: ', encode(prompt).length)
-
   const outFullpath = outFile?.fullpath || path.resolve(outputPath)
 
   const completion = await createCompletion({ prompt })
@@ -145,8 +118,8 @@ export async function generateTest (data: Omit<Payload, 'command'>) {
 
   const { dir: outputDir } = path.parse(outFullpath)
 
-  if (!(await hasPathAccess(outputDir))) {
-    await createDir(outputDir)
+  if (!(await directoryManager.get(outputDir))) {
+    await directoryManager.create({ path: outputDir })
   }
 
   return fileManager.create(

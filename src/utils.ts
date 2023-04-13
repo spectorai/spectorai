@@ -182,3 +182,41 @@ export class FileManager {
     }
   }
 }
+
+export class DirectoryManager {
+  async create (data: unknown, query: unknown = {}) {
+    const { path = '' } = data as any || {}
+
+    const { recursive = true } = query as any
+
+    const fullpath = _path.resolve(path)
+
+    await mkdir(fullpath, { recursive })
+
+    return this.get(path)
+  }
+
+  async get (path: string, query?: unknown) {
+    const fullpath = _path.resolve(path)
+
+    if (!(await hasPathAccess(fullpath))) return null
+
+    const statEntity = await stat(fullpath)
+
+    if (statEntity.isFile()) return null
+
+    const { dir } = _path.parse(fullpath)
+
+    const name = fullpath.split(_path.sep).at(-1)
+
+    return {
+      name,
+      ext: null,
+      dir,
+      fullpath,
+      content: null,
+      size: statEntity.size,
+      createdAt: statEntity.birthtime,
+    }
+  }
+}
