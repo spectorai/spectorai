@@ -14,7 +14,19 @@
     "README.md",
     "dist/**"
   ],
-  "keywords": [],
+  "bugs": {
+    "url": "https://github.com/spectorai/spectorai/issues"
+  },
+  "repository": {
+    "url": "https://github.com/spectorai/spectorai"
+  },
+  "homepage": "https://github.com/spectorai/spectorai",
+  "keywords": [
+    "spector ai",
+    "openai",
+    "generation test",
+    "cli"
+  ],
   "author": {
     "name": "Ivan Zaldivar",
     "email": "ivanzaldivar16@gmail.com",
@@ -26,8 +38,9 @@
     "build": "tsc",
     "start:ts": "ts-node src/index.ts",
     "start": "node dist/index.js",
+    "release": "conventional-github-releaser -p angular -r 0",
     "changelog": "conventional-changelog -p angular -i CHANGELOG.md -s -r 0",
-    "pre:alpha": "npm version prerelease --preid=alpha && npm run changelog && git add CHANGELOG.md && git commit -m \"chore: Publish release\" && git push origin"
+    "publish:pre-alpha": "npm run build && npm version prerelease --preid=alpha && npm run changelog && git add CHANGELOG.md && git commit -m \"chore: Publish release\" && git push origin && npm publish && npm run release"
   },
   "devDependencies": {
     "@types/inquirer": "9.0.3",
