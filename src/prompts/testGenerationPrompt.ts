@@ -141,7 +141,7 @@ export async function generateTest (data: Omit<Payload, 'command'>) {
 
   const completion = await createCompletion({ prompt })
 
-  const outputContentFile = completion?.text as string
+  const outContent = completion?.text as string
 
   const { dir: outputDir } = path.parse(outFullpath)
 
@@ -149,9 +149,15 @@ export async function generateTest (data: Omit<Payload, 'command'>) {
     await createDir(outputDir)
   }
 
-  return writeFile(outFullpath, outputContentFile, {
-    mode: writeMode
-  })
+  return fileManager.create(
+    {
+      path: outFullpath,
+      content: outContent
+    },
+    {
+      mode: writeMode
+    }
+  )
 }
 
 export async function testGenerationPrompt (): Promise<void> {

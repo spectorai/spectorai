@@ -142,16 +142,18 @@ export interface File {
 }
 
 export class FileManager {
-  async create (data: unknown, query?: QueryFileManager): Promise<void> {
-    const { path: filePath, content, encoding } = data as any
+  async create (data: unknown, query?: Omit<QueryFileManager, 'encoding'>): Promise<File> {
+    const { path: filePath, content, encoding = ENCODING } = data as any
 
     const { mode = 'overwrite' } = query || {}
 
     const fullpath = _path.resolve(filePath)
 
-    return mode === 'overwrite'
-      ? writeFile(fullpath, content, encoding)
-      : appendFile(fullpath, content, encoding)
+    mode === 'overwrite'
+      ? await writeFile(fullpath, content, encoding)
+      : await appendFile(fullpath, content, encoding)
+
+    return this.get(fullpath) as Promise<File>
   }
 
   async get (path: string, query?: QueryFileManager): Promise<File | null | undefined> {
