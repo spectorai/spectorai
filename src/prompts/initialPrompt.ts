@@ -11,23 +11,23 @@ const question: QuestionCollection = {
     {
       name: 'Generation testing',
       value: commands.TestGeneration
-    },
-    {
-      name: 'Generation documentation',
-      value: commands.GenerationDocumentation
-    },
-    {
-      name: 'Bug detection',
-      value: commands.BugDetection
-    },
-    {
-      name: 'Explained code',
-      value: commands.ExplainedCode
-    },
-    {
-      name: 'Generation functions',
-      value: commands.GenerationFuntions
     }
+    // {
+    //   name: 'Generation documentation',
+    //   value: commands.GenerationDocumentation
+    // },
+    // {
+    //   name: 'Bug detection',
+    //   value: commands.BugDetection
+    // },
+    // {
+    //   name: 'Explained code',
+    //   value: commands.ExplainedCode
+    // },
+    // {
+    //   name: 'Generation functions',
+    //   value: commands.GenerationFuntions
+    // }
   ]
 }
 
