@@ -9,15 +9,17 @@ import { TestPrompt } from './declarations.js'
  * 
  * const prompt = {
  *   language: 'javascript',
- *   targetCode: 'function add(a, b) { return a + b; }',
+ *   inCode: 'function add(a, b) { return a + b; }',
+ *   inCodePath: 'src/operations.js',
  *   description: 'Write a function that adds two numbers together.',
- *   outputCode: 'console.log(add(2, 3)); // Output: 5'
+ *   outCode: 'console.log(add(2, 3)); // Output: 5',
+ *   outCodePath: 'test/operations.spec.js'
  * }
  * 
  * generateTestPrompt(prompt)
  * // ## Input code
  * 
- * // ```javascript
+ * // ```javascript [src/operations.js]
  * // function add(a, b) { return a + b; }
  * // ```
  * 
@@ -27,17 +29,24 @@ import { TestPrompt } from './declarations.js'
  * 
  * // ## Output code
  * 
- * // ```javascript
+ * // ```javascript [test/operations.spec.js]
  * // console.log(add(2, 3));
  */
 export const generateTestPrompt = (prompt: TestPrompt): string => {
-  const { language, targetCode, targetCodePath, description, outputCode = '' } = prompt
+  const {
+    language,
+    inCode,
+    inPath,
+    outPath,
+    description,
+    outCode = ''
+  } = prompt
 
   const promptChunks = [
     // Target code
     '## Target code',
-    `\`\`\`${language} [${targetCodePath}]`,
-    `${targetCode}`,
+    `\`\`\`${language} [${inPath}]`,
+    `${inCode}`,
     '```',
 
     // Indications
@@ -46,8 +55,8 @@ export const generateTestPrompt = (prompt: TestPrompt): string => {
 
     // Test code
     '## Test code',
-    `\`\`\`${language}`,
-    outputCode
+    `\`\`\`${language} [${outPath}]`,
+    outCode
   ]
 
   return promptChunks.join('\n')

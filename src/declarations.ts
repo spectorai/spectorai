@@ -2,13 +2,11 @@ import { CreateCompletionRequest } from 'openai'
 
 /**
  * An interface representing a request for text completion using an AI language model.
- *
  * @interface
  */
 export interface CompletionRequest extends Omit<CreateCompletionRequest, 'prompt'> {
   /**
    * The prompt text to use as a starting point for text completion.
-   *
    * @type {string}
    */
   prompt: string;
@@ -72,7 +70,7 @@ export interface BasePrompt {
    * The code to be targeted by the prompt.
    * @type {string}
    */
-  targetCode: string;
+  inCode: string;
 
   /**
    * A description of the prompt.
@@ -94,22 +92,24 @@ export interface BasePrompt {
  */
 export interface TestPrompt extends BasePrompt {
   /**
-   * The test code to be run against the target code.
-   *
+   * The test code to be run against the target code.   *
    * @type {string=}
    */
-  outputCode?: string;
+  outCode?: string;
   /**
    * Specifies the path of the file that represents the input code.
-   *
    * @type {string}
    */
-  targetCodePath: string;
+  inPath: string;
+  /**
+   * Specifies the path of the file that represents the output code.
+   * @type {string}
+   */
+  outPath: string;
 }
 
 /**
  * An object representing a message, optionally with start and end emojis.
- *
  * @interface
  */
 export interface Message {

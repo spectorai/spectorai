@@ -95,8 +95,9 @@ export async function generateTest (data: Omit<Payload, 'command'>) {
 
   const prompt = generateTestPrompt({
     language: inFile.ext as string,
-    targetCode: inFile.content as string,
-    targetCodePath: inputPath,
+    inCode: inFile.content as string,
+    inPath: inputPath,
+    outPath: outputPath,
     description
   })
 
