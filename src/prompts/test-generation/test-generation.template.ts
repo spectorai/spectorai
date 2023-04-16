@@ -1,4 +1,4 @@
-import { TestPrompt } from './declarations.js'
+import { TestPrompt } from '../../declarations.js'
 
 /**
  * Generate a test prompt string based on a TestPrompt object.

@@ -3,24 +3,16 @@ import inquirer, { QuestionCollection } from 'inquirer'
 import path from 'node:path'
 import ora from 'ora'
 
-import { clearConsole, closeProgram, printMessage, validateFilePath } from '../utils.js'
-import { Payload, FileSystem } from '../declarations.js'
-import { createCompletion } from '../config/openai.js'
-import { generateTestPrompt } from '../templates.js'
+import { clearConsole, closeProgram, printMessage, validateFilePath } from '../../utils.js'
 
-import { DirectoryService } from '../services/directory.service.js'
-import { FileService } from '../services/file.service.js'
+import { TestGenerationStrategy } from './test-generation.strategy.js'
 
-import { confirmationPrompt } from './sharedPrompts.js'
-import { initPrompt } from './initialPrompt.js'
+import { confirmationPrompt } from '../shared.js'
+import { initPrompt } from '../index.js'
 
 const MESSAGE_FEEDBACK = 'Your tests are being generated, please wait a moment...'
 
 const MESSAGE_SUCCEEDED = 'Your test was created successfully.'
-
-const fileService = new FileService()
-
-const directoryService = new DirectoryService()
 
 const questions: QuestionCollection = [
   {
@@ -44,9 +36,7 @@ const questions: QuestionCollection = [
     type: 'input',
     name: 'outputPath',
     message: 'Specify the output file path:',
-    validate: (value: string) => {
-      return validateFilePath(value) || 'The path is invalid.'
-    }
+    validate: (value: string) => validateFilePath(value) || 'The path is invalid.'
   },
   {
     type: 'list',
@@ -88,42 +78,6 @@ const questions: QuestionCollection = [
   }
 ]
 
-export async function generateTest (data: Omit<Payload, 'command'>) {
-  const { description, inputPath, outputPath, writeMode = 'overwrite' } = data
-
-  const inFile = await fileService.get(inputPath) as FileSystem
-
-  const prompt = generateTestPrompt({
-    language: inFile.ext as string,
-    inCode: inFile.content as string,
-    inPath: inputPath,
-    outPath: outputPath,
-    description
-  })
-
-  const outFullpath = path.resolve(outputPath)
-
-  const completion = await createCompletion({ prompt })
-
-  const outContent = completion?.text as string
-
-  const { dir: outputDir } = path.parse(outFullpath)
-
-  if (!(await directoryService.get(outputDir))) {
-    await directoryService.create({ path: outputDir })
-  }
-
-  return fileService.create(
-    {
-      path: outFullpath,
-      content: outContent
-    },
-    {
-      mode: writeMode
-    }
-  )
-}
-
 export async function testGenerationPrompt (): Promise<void> {
   const answers = await inquirer.prompt(questions)
 
@@ -132,7 +86,9 @@ export async function testGenerationPrompt (): Promise<void> {
   const spinner = ora(MESSAGE_FEEDBACK).start()
 
   try {
-    await generateTest({
+    const strategy = new TestGenerationStrategy()
+
+    await strategy.execute({
       inputPath,
       outputPath,
       description,

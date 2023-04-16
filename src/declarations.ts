@@ -228,6 +228,10 @@ export interface FileSystem {
   updatedAt: Date;
 }
 
+export interface Strategy<T = unknown, K = unknown> {
+  execute (data: T): Promise<K>
+}
+
 export const commands = {
   TestGeneration: 'TG',
   GenerationDocumentation: 'GD',
