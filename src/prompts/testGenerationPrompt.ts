@@ -93,19 +93,14 @@ export async function generateTest (data: Omit<Payload, 'command'>) {
 
   const inFile = await fileService.get(inputPath) as FileSystem
 
-  const outFile = await fileService.get(outputPath)
-
   const prompt = generateTestPrompt({
     language: inFile.ext as string,
     targetCode: inFile.content as string,
     targetCodePath: inputPath,
-    description,
-    outputCode: outFile?.content || ''
+    description
   })
 
-  console.log('prompt: ', prompt)
-
-  const outFullpath = outFile?.path || path.resolve(outputPath)
+  const outFullpath = path.resolve(outputPath)
 
   const completion = await createCompletion({ prompt })
 
