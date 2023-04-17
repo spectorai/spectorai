@@ -1,3 +1,19 @@
+## [0.0.1-alpha.3](https://github.com/spectorai/spectorai/compare/v0.0.1-alpha.2...v0.0.1-alpha.3) (2023-04-17)
+
+
+### Bug Fixes
+
+* Added the test route in the prompt. Close [#7](https://github.com/spectorai/spectorai/issues/7) ([77726e6](https://github.com/spectorai/spectorai/commit/77726e629e85501b47eaa75c5bf1c1fe321364bc))
+
+
+### Features
+
+* Added 'Function Generation' option ([4ce58e3](https://github.com/spectorai/spectorai/commit/4ce58e326479cf1d5ab747346eb54ccb2e7a7cf1))
+* the 'write mode' option was removed in the generation of functions ([d4d94ca](https://github.com/spectorai/spectorai/commit/d4d94cadd86f82c871038f1ab78c2b80eda32e75))
+* the 'write mode' option was removed in the test generations ([b3fe7fa](https://github.com/spectorai/spectorai/commit/b3fe7fa19457429ab68c2f46f5f1e819237c32ba))
+
+
+
 ## [0.0.1-alpha.2](https://github.com/spectorai/spectorai/compare/v0.0.1-alpha.1...v0.0.1-alpha.2) (2023-04-13)
 
 
