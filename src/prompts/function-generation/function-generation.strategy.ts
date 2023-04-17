@@ -3,12 +3,12 @@ import _ from 'lodash'
 
 import { Payload, ServiceMethods, Strategy, FileSystem } from '../../declarations.js'
 import { createCompletion } from '../../config/openai.js'
+import { getExtFromFilename } from '../../utils.js'
 
 import { secondChunkPrompt } from './function-generation.template.js'
 
 import { DirectoryService } from '../../services/directory.service.js'
 import { FileService } from '../../services/file.service.js'
-import { getExtFromFilename } from '../../utils.js'
 
 type ResourceServiceMethods = ServiceMethods<Partial<FileSystem>, FileSystem>
 
@@ -43,14 +43,9 @@ export class FunctionGenerationStrategy implements Strategy {
       await this.dirService.create({ path: outDir })
     }
 
-    return this.fileService.create(
-      {
-        path: outFullpath,
-        content: outContent
-      },
-      {
-        mode: writeMode
-      }
-    )
+    return this.fileService.create({
+      path: outFullpath,
+      content: outContent
+    })
   }
 }

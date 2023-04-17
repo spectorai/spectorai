@@ -1,5 +1,4 @@
 import inquirer, { QuestionCollection } from 'inquirer'
-import { access, constants } from 'node:fs/promises'
 import _path from 'node:path'
 import ora from 'ora'
 
@@ -21,39 +20,6 @@ const questions: QuestionCollection = [
     name: 'outPath',
     message: 'Specify the output file path:',
     validate: (value: string) => validateFilePath(value) || 'The path is invalid.'
-  },
-  {
-    type: 'list',
-    name: 'writeMode',
-    message: 'Select writing mode:',
-    choices: [
-      {
-        name: 'Append',
-        value: 'append'
-      },
-      {
-        name: 'Overwrite',
-        value: 'overwrite'
-      }
-    ],
-    default: 'overwrite',
-    validate: async (_, answers) => {
-      const { outPath } = answers || {}
-
-      try {
-        await access(_path.resolve(outPath), constants.W_OK)
-      } catch (error: any) {
-        return error?.message ||  'An error occurred in the operation.'
-      }
-    },
-    when: async ({ outPath }) => {
-      try {
-        await access(_path.resolve(outPath), constants.R_OK)
-        return true
-      } catch (error) {
-        return false
-      }
-    }
   },
   {
     type: 'editor',

@@ -9,7 +9,7 @@ export class FileService implements ServiceMethods<Partial<FileSystem>, FileSyst
   async create (data: Partial<FileSystem>, query: Query = {}): Promise<FileSystem> {
     const { path: filePath, content, encoding = ENCODING } = data as any
 
-    const { mode = 'overwrite' } = query || {}
+    const { mode = 'append' } = query || {}
 
     const fullpath = _path.resolve(filePath)
 
