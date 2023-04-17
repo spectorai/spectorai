@@ -1,6 +1,5 @@
-import { stat, access, constants } from 'node:fs/promises'
 import inquirer, { QuestionCollection } from 'inquirer'
-import path from 'node:path'
+import _path from 'node:path'
 import ora from 'ora'
 
 import { clearConsole, closeProgram, printMessage, validateFilePath } from '../../utils.js'
@@ -10,22 +9,24 @@ import { TestGenerationStrategy } from './test-generation.strategy.js'
 import { confirmationPrompt } from '../shared.js'
 import { initPrompt } from '../index.js'
 
+import { FileService } from '../../services/file.service.js'
+
 const MESSAGE_FEEDBACK = 'Your tests are being generated, please wait a moment...'
 
 const MESSAGE_SUCCEEDED = 'Your test was created successfully.'
 
+const fileService = new FileService()
+
 const questions: QuestionCollection = [
   {
     type: 'input',
-    name: 'inputPath',
+    name: 'inPath',
     message: 'Enter the file path:',
     async validate(value) {
       try {
-        const statResource = await stat(path.resolve(value))
+        const file = await fileService.get(_path.resolve(value))
 
-        if (statResource.isDirectory()) return 'The path entered must be a file, not a directory.'
-
-        await access(path.resolve(value), constants.R_OK)
+        if (!file) return 'The path entered must be a file, not a directory.'
         return true
       } catch (error: any) {
         return error?.message ?? 'An error occurred in the operation.'
@@ -34,42 +35,9 @@ const questions: QuestionCollection = [
   },
   {
     type: 'input',
-    name: 'outputPath',
+    name: 'outPath',
     message: 'Specify the output file path:',
     validate: (value: string) => validateFilePath(value) || 'The path is invalid.'
-  },
-  {
-    type: 'list',
-    name: 'writeMode',
-    message: 'Select writing mode:',
-    choices: [
-      {
-        name: 'Append',
-        value: 'append'
-      },
-      {
-        name: 'Overwrite',
-        value: 'overwrite'
-      }
-    ],
-    default: 'overwrite',
-    validate: async (_, answers) => {
-      const { outputPath } = answers || {}
-
-      try {
-        await access(outputPath, constants.W_OK)
-      } catch (error: any) {
-        return error?.message ||  'An error occurred in the operation.'
-      }
-    },
-    when: async ({ outputPath }) => {
-      try {
-        await access(outputPath, constants.R_OK)
-        return true
-      } catch (error) {
-        return false
-      }
-    }
   },
   {
     type: 'editor',
@@ -81,7 +49,7 @@ const questions: QuestionCollection = [
 export async function testGenerationPrompt (): Promise<void> {
   const answers = await inquirer.prompt(questions)
 
-  const { inputPath, outputPath, description, writeMode } = answers
+  const { inPath, outPath, description } = answers
 
   const spinner = ora(MESSAGE_FEEDBACK).start()
 
@@ -89,10 +57,9 @@ export async function testGenerationPrompt (): Promise<void> {
     const strategy = new TestGenerationStrategy()
 
     await strategy.execute({
-      inputPath,
-      outputPath,
-      description,
-      writeMode
+      inputPath: inPath,
+      outputPath: outPath,
+      description
     })
 
     spinner.succeed(MESSAGE_SUCCEEDED)

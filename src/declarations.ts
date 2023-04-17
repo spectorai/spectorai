@@ -58,7 +58,7 @@ export interface Payload {
   /**
    * he write mode for the output file.
    */
-  writeMode: WriteMode;
+  writeMode?: WriteMode;
 }
 
 /**

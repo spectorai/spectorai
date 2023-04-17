@@ -17,7 +17,7 @@ export class TestGenerationStrategy implements Strategy {
   ) {}
 
   async execute(data: Omit<Payload, 'command'>): Promise<FileSystem> {
-    const { description, inputPath, outputPath, writeMode = 'overwrite' } = data
+    const { description, inputPath, outputPath } = data
 
     const inFile = await this.fileService.get(inputPath) as FileSystem
   
@@ -41,14 +41,9 @@ export class TestGenerationStrategy implements Strategy {
       await this.dirService.create({ path: outputDir })
     }
   
-    return this.fileService.create(
-      {
-        path: outFullpath,
-        content: outContent
-      },
-      {
-        mode: writeMode
-      }
-    )
+    return this.fileService.create({
+      path: outFullpath,
+      content: outContent
+    })
   }
 }
