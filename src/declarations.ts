@@ -238,5 +238,5 @@ export const commands = {
   BugDetection: 'BD',
   ExplainedCode: 'EC',
   // GenerationTypes: 'GT',
-  GenerationFuntions: 'GF'
+  FuntionsGeneration: 'FG'
 }

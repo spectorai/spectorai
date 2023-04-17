@@ -2,6 +2,7 @@ import inquirer, { QuestionCollection } from 'inquirer'
 
 import { commands } from '../declarations.js'
 
+import { functionGenerationPrompt } from './function-generation/function-generation.prompt.js'
 import { testGenerationPrompt } from './test-generation/test-generation.prompt.js'
 
 const question: QuestionCollection = {
@@ -12,6 +13,10 @@ const question: QuestionCollection = {
     {
       name: 'Generation testing',
       value: commands.TestGeneration
+    },
+    {
+      name: 'Generation functions',
+      value: commands.FuntionsGeneration
     }
     // {
     //   name: 'Generation documentation',
@@ -25,10 +30,6 @@ const question: QuestionCollection = {
     //   name: 'Explained code',
     //   value: commands.ExplainedCode
     // },
-    // {
-    //   name: 'Generation functions',
-    //   value: commands.GenerationFuntions
-    // }
   ]
 }
 
@@ -49,5 +50,6 @@ export async function initPrompt (): Promise<void> {
 }
 
 export const promptsMap = new Map([
-  [commands.TestGeneration, testGenerationPrompt]
+  [commands.TestGeneration, testGenerationPrompt],
+  [commands.FuntionsGeneration, functionGenerationPrompt]
 ])
