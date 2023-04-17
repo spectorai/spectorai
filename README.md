@@ -1,7 +1,5 @@
 ![Spector AI](https://user-images.githubusercontent.com/64434514/231593196-a893acb3-3e39-4d15-9426-03d4a14b20e6.png)
 
-# Spector AI
-
 > Description made with **GPT 3.5**
 
 Discover the power of **Spector AI**! 🔮 An awesome tool to **generate tests**, **documentation** and **code explanations** in any programming language 🤯 It's magical! Simply install [Node.js](https://nodejs.org), create an [Open AI account](https://platform.openai.com/account), and add your environment variables. And ready! 🚀
@@ -16,6 +14,14 @@ Discover the power of **Spector AI**! 🔮 An awesome tool to **generate tests**
 - ⚡ Easy to configure and integrate.
 - 🛡️ Written in Typescript.
 - 👨🏻‍💻 Community driven.
+
+| Feature | Status |
+| ------- | ------ |
+| Test generation | ✅ |
+| Function generation | ✅ |
+| Code explanation | ⛔ |
+| Documentacion generation | ⛔ |
+| Bug detection | ⛔ |
 
 ## Requirements
 
