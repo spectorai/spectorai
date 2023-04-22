@@ -28,6 +28,13 @@ Discover the power of **Spector AI**! 🔮 An awesome tool to **generate tests**
 - Have [Node.js](https://nodejs.org) installed.
 - Create an account in [Open AI](https://openai.com/).
 
+## Warning ⚠️
+
+Before proceeding with the other steps, we kindly ask you to modify the values of the `hard limit` and `soft limit` parameters found in [Usage Limit](https://platform.openai.com/account/billing/limits) in advance. This is to ensure that you do not encounter unexpected events while using the Open AI API and that your usage remains within your budget. Thank you for your cooperation. 🙏
+
+![hard-limit-and-soft-limit-openai](https://user-images.githubusercontent.com/64434514/233757824-2bb4c91e-5c40-41bf-bf0b-feff698314ba.png)
+
+
 ## Installation
 
 ```bash
